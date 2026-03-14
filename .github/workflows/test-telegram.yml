@@ -28,5 +28,13 @@ jobs:
           echo "TELEGRAM_SSL_VERIFY=false" >> .env
           [ -n "${{ secrets.WHATSAPP_WEBHOOK_URL }}" ] && echo "WHATSAPP_WEBHOOK_URL=${{ secrets.WHATSAPP_WEBHOOK_URL }}" >> .env || true
 
+      - name: Check Telegram secrets
+        run: |
+          if [ -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ] || [ -z "${{ secrets.TELEGRAM_CHAT_ID }}" ]; then
+            echo "::error::TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set in Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          echo "Telegram secrets are set. Sending test message..."
+
       - name: Send test message (Telegram + WhatsApp + console)
         run: python main.py --test

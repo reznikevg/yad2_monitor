@@ -322,6 +322,13 @@ def main() -> None:
         return
 
     if args.test:
+        # In CI, require Telegram so the workflow fails clearly if secrets are missing
+        if not (os.environ.get("TELEGRAM_BOT_TOKEN", "").strip() and os.environ.get("TELEGRAM_CHAT_ID", "").strip()):
+            logger.error(
+                "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are not set. "
+                "Add them in GitHub: Settings → Secrets and variables → Actions."
+            )
+            sys.exit(1)
         notifier = _build_notifiers_for_report()
         notifier.send_test()
         logger.info("Test message sent to all configured channels.")
