@@ -129,7 +129,7 @@ python main.py --send-now
 
 **מדריך מלא:** [DEPLOY.md](DEPLOY.md) – צעד־אחר־צעד להעלאה ל-GitHub, הגדרת Secrets ו-Pages, ופתיחת הדוח מהנייד.
 
-**בקצרה:** הרץ `./deploy-to-github.sh` מתוך התיקייה, דחוף לריפו חדר, הגדר Secrets, הפעל Actions ו-Pages. אחרי זה אפשר לכבות את המחשב; הדוח זמין ב־`https://USER.github.io/REPO/report.html`.
+**בדיקת טלגרם מהענן:** **Actions** → **Test Telegram** → **Run workflow**. אמורה להגיע הודעת בדיקה לטלגרם (ולווטסאפ אם הוגדר) – בלי להריץ שום דבר על המחשב.
 
 ---
 
