@@ -1,0 +1,7 @@
+# Yad2 Real Estate Monitor - Dependencies
+playwright>=1.40.0
+playwright-stealth>=1.0.6
+requests>=2.28.0
+python-dotenv>=1.0.0
+
+# Install browsers: python -m playwright install chromium
