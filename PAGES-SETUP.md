@@ -2,29 +2,32 @@
 
 אם אתה רואה "There isn't a GitHub Pages site here":
 
-## 1. וודא ש-Pages מופעל
+## 1. הגדר את מקור האתר
 
 1. ב-repo: **Settings** → **Pages** (בתפריט משמאל).
 2. תחת **Build and deployment**:
-   - **Source:** בחר **Deploy from a branch** (לא "GitHub Actions").
-   - **Branch:** בחר **main**.
-   - **Folder:** בחר **/ (root)**.
-3. **Save**.
+   - **Source:** בחר **GitHub Actions** (workflow מפרסם את האתר).
+3. **Save** (אין צורך לבחור branch או folder).
 
-## 2. המתן דקה–שתיים
+## 2. הפעל פריסה (פעם אחת)
 
-אחרי השמירה, GitHub בונה את האתר. רענן את הכתובת:
+- **Actions** → **Deploy to Pages** → **Run workflow** → **Run workflow**.
+- או פשוט בצע **push** ל־main (גם זה מפעיל את הפריסה).
+
+## 3. המתן דקה–שתיים
+
+אחרי שה-workflow מסתיים, רענן את הכתובת:
 
 - **https://reznikevg.github.io/yad2_monitor/**
 - או **https://reznikevg.github.io/yad2_monitor/report.html**
 
-## 3. אם עדיין 404
+## 4. אם עדיין 404
 
 - וודא שהיה **push** ל־`main` (כולל הקובץ `report.html`).
 - ב-**Actions** וודא שאין שגיאות ב-workflow "Yad2 Monitor".
 - נסה דפדפן אחר או חלון פרטי (אינקוגניטו).
 
-## 4. כתובת הדוח מהנייד
+## 5. כתובת הדוח מהנייד
 
 אחרי ש-Pages עובד:
 
