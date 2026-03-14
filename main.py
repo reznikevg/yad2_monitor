@@ -153,7 +153,11 @@ async def run_cycle(
         update_source(db, source_key, url, label, current_listings, now_iso)
 
         new_listings, price_changed_listings = compare_listings(current_listings, previous)
-        if new_listings or price_changed_listings:
+        # Do not spam "new" when previous was empty (first run or after failed commits) — treat as initial sync
+        is_initial_sync = not previous and bool(current_listings)
+        if is_initial_sync:
+            logger.info("[%s] Initial sync: %d listings saved. Next runs will notify only new/price changes.", source_key, len(current_listings))
+        elif new_listings or price_changed_listings:
             logger.info("[%s] %d new, %d price changes — sending immediate update", source_key, len(new_listings), len(price_changed_listings))
             notifier.send_changes(new_listings, price_changed_listings)
         else:

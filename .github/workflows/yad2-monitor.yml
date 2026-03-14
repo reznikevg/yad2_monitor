@@ -62,5 +62,5 @@ jobs:
           import os, requests
           t=os.environ.get('TELEGRAM_BOT_TOKEN'); c=os.environ.get('TELEGRAM_CHAT_ID')
           if t and c:
-              requests.post(f'https://api.telegram.org/bot{t}/sendMessage', json={'chat_id':c,'text':'⚠️ Yad2 Monitor – יש שגיאה ב-Actions.\\nבדוק: https://github.com/reznikevg/yad2_monitor/actions'}, timeout=10, verify=False)
+              requests.post(f'https://api.telegram.org/bot{t}/sendMessage', json={'chat_id':c,'text':'⚠️ Yad2 Monitor – יש שגיאה ב-Actions (אולי Captcha/חסימה).\\nבדוק לוג: https://github.com/reznikevg/yad2_monitor/actions'}, timeout=10, verify=False)
           "
