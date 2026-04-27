@@ -122,6 +122,43 @@ def _format_listing_line(item: Dict[str, Any]) -> str:
     return line
 
 
+def _format_listing_card(item: Dict[str, Any], status: str = "חדש") -> str:
+    """Rich card format for new/changed listing notification."""
+    from datetime import datetime
+    addr = item.get("address") or "לא צוין"
+    price = item.get("price")
+    price_str = f"₪{price:,}/חודש" if isinstance(price, int) else str(price or "-")
+    rooms = item.get("rooms") or ""
+    sqm = item.get("sqm") or ""
+    floor = item.get("floor") or ""
+    url = item.get("url") or ""
+    source_label = item.get("_source_label") or ""
+    total_in_db = item.get("_total_in_db") or 0
+
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines = [f"🏠 Yad2 Monitor | {ts}", ""]
+    if source_label:
+        lines.append(f"📍 {source_label}")
+    icon = "✅" if status == "חדש" else "💰"
+    lines.append(f"{icon} {status}:")
+    detail_parts = []
+    if rooms:
+        detail_parts.append(f"{rooms} חדרים")
+    if sqm:
+        detail_parts.append(f"{sqm} מ\"ר")
+    if floor:
+        detail_parts.append(f"קומה {floor}")
+    detail_parts.append(price_str)
+    lines.append(f"• {addr}")
+    if detail_parts:
+        lines.append(" | ".join(detail_parts))
+    if url:
+        lines.append(f"🔗 לצפייה במודעה\n{url}")
+    if total_in_db:
+        lines.append(f"\n📊 סה\"כ בDB: {total_in_db}")
+    return "\n".join(lines)
+
+
 def _format_full_report_plain(sources_with_listings: List[Dict[str, Any]]) -> str:
     """Plain text body for full report (Telegram/WhatsApp)."""
     lines = ["📋 דיווח מודעות נדל״ן להשכרה – יד2", ""]
@@ -159,14 +196,15 @@ class TelegramNotifier(BaseNotifier):
             r.raise_for_status()
 
     def send_new_listing(self, listing: Dict[str, Any]) -> None:
-        self._send("🆕 מודעה חדשה\n\n" + _format_listing_line(listing))
+        self._send(_format_listing_card(listing, status="חדש ✅"))
 
     def send_price_change(self, listing: Dict[str, Any]) -> None:
         prev = listing.get("previous_price")
         curr = listing.get("price")
         prev_str = f"{prev:,} ₪" if isinstance(prev, int) else str(prev)
         curr_str = f"{curr:,} ₪" if isinstance(curr, int) else str(curr)
-        self._send(f"💰 שינוי מחיר\n{listing.get('address', '')}\nהיה {prev_str} → כעת {curr_str}\n{listing.get('url', '')}")
+        card = _format_listing_card(listing, status=f"שינוי מחיר: {prev_str} → {curr_str}")
+        self._send(card)
 
     def send_full_report(self, sources_with_listings: List[Dict[str, Any]]) -> None:
         text = _format_full_report_plain(sources_with_listings)

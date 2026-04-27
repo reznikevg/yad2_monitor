@@ -81,12 +81,7 @@ class Yad2Scraper:
         listings: List[Dict[str, Any]] = []
 
         async with stealth.use_async(async_playwright()) as p:
-            # Prefer system Chrome when Chromium isn't installed (e.g. corporate SSL blocks playwright install)
-            try:
-                browser = await p.chromium.launch(headless=self.headless, channel="chrome")
-            except Exception as e:
-                logger.debug("Launch with channel=chrome failed (%s), trying default chromium.", e)
-                browser = await p.chromium.launch(headless=self.headless)
+            browser = await p.chromium.launch(headless=self.headless)
             try:
                 context = await browser.new_context(
                     user_agent=get_random_user_agent(),
@@ -225,15 +220,27 @@ class Yad2Scraper:
                 floor_m = re.search(r"קומה\s*(\d+(?:\s*מתוך\s*\d+)?)", text, re.IGNORECASE)
                 if floor_m:
                     floor = floor_m.group(1).strip()
-                # Address: strip to meaningful part (e.g. "יהושע חנקין דירה, אגרובנק, חולון")
+                # Address: find Hebrew text lines that aren't price/rooms/sqm/floor
                 address = ""
-                for line in text.replace("\n", " ").split():
-                    if "₪" in line or re.match(r"^\d+\s*חדרים", line):
-                        break
-                    if line and not re.match(r"^[\d,]+$", line):
-                        address = (address + " " + line).strip()
-                if not address and text:
-                    address = text.strip().split("\n")[0][:120] if text else ""
+                addr_parts = []
+                for line in text.split("\n"):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if re.search(r"₪|/חודש|/month", line):
+                        continue
+                    if re.search(r"^\d[\d,]*$", line):
+                        continue
+                    if re.search(r"חדרים?|מ[\"׳]?ר|קומה|חניה|ממ[\"׳]?ד|מעלית|הצג|שמור|דיווח|צור קשר", line):
+                        continue
+                    if re.search(r"[֐-׿]", line) and len(line) > 3:
+                        addr_parts.append(line)
+                        if len(addr_parts) >= 2:
+                            break
+                if addr_parts:
+                    address = ", ".join(addr_parts[:2])
+                elif text:
+                    address = text.strip().split("\n")[0][:120]
                 # Phone: sometimes in feed as "הצג מספר" or digits; leave empty if not found
                 phone = ""
                 phone_m = re.search(r"0\d[\d\s\-]{7,}", text)

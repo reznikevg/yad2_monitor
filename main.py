@@ -159,6 +159,10 @@ async def run_cycle(
             logger.info("[%s] Initial sync: %d listings saved. Next runs will notify only new/price changes.", source_key, len(current_listings))
         elif new_listings or price_changed_listings:
             logger.info("[%s] %d new, %d price changes — sending immediate update", source_key, len(new_listings), len(price_changed_listings))
+            total_in_db = len(current_listings)
+            for item in new_listings + price_changed_listings:
+                item["_source_label"] = label
+                item["_total_in_db"] = total_in_db
             notifier.send_changes(new_listings, price_changed_listings)
         else:
             logger.info("[%s] No changes.", source_key)

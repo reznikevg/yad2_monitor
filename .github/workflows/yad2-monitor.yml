@@ -1,10 +1,8 @@
-# Yad2 monitor – DISABLED: no schedule. Run manually via Actions → Yad2 Monitor → Run workflow.
-# To re-enable automatic runs every 10 min, uncomment the schedule block below.
 name: Yad2 Monitor
 
 on:
-  # schedule:
-  #   - cron: "*/10 * * * *"
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch: {}
 
 env:
